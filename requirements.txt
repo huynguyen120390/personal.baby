@@ -1,0 +1,34 @@
+# ===== Core Math & Processing =====
+numpy==1.26.4
+scipy==1.11.4
+
+# ===== Computer Vision =====
+opencv-python==4.9.0.80
+mediapipe==0.10.14
+imutils==0.5.4
+
+# ===== GUI =====
+PyQt6==6.6.1
+pyqtgraph==0.13.3
+
+# ===== Web Streaming =====
+flask==3.0.2
+flask-socketio==5.3.6
+uvicorn==0.27.1
+
+# ===== Data & Logging =====
+pandas==2.2.1
+sqlalchemy==2.0.25
+
+# ===== Sensors (I2C / GPIO) =====
+smbus2==0.4.3
+RPi.GPIO==0.7.1
+
+# ===== Utilities =====
+python-dotenv==1.0.1
+requests==2.31.0
+psutil==5.9.8
+schedule==1.2.1
+
+# ===== Text To Speech =====
+pyttsx3==2.90

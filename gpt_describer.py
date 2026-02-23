@@ -7,6 +7,7 @@ from typing import Optional
 
 import cv2
 from openai import OpenAI
+import pyttsx3
 
 
 @dataclass(frozen=True)
@@ -45,3 +46,8 @@ class GptDescriber:
             }],
         )
         return resp.output_text
+
+    def speak(self, text):
+        engine = pyttsx3.init()
+        engine.say(text)
+        engine.runAndWait()

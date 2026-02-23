@@ -1105,3 +1105,61 @@ Do not guess details that are not visible.",gpt-4.1-mini,auto,"1) One adult male
 2) No baby or young child is visible in the frame.
 
 3) The environment appears to be indoors with a chair and closed door visible. No visible clutter or hazardous objects near the person's face. No blankets, pillows, cords, or small objects are apparent in the immediate area."
+2026-02-19T19:12:24+00:00,laptop_webcam,1,1,"You are analyzing a camera frame for child safety monitoring.
+
+Describe the scene briefly in 3–6 short lines.
+
+Focus on:
+
+1) Who are present:
+   - Identify baby, adult, animal, or other people if visible. How many? (e.g. ""1 baby in center, 1 adult on left"")
+   - Approximate age category (infant/toddler/adult) only if reasonably clear.
+   - Their position in the frame (left/right/center/background).
+   - Tell what they are doing if clear. Anything unusual or concerning?
+
+2) Baby safety assessment (if a baby or young child is visible):
+   - Is the baby’s face clearly visible?
+   - Is anything covering or very close to the mouth or nose?
+   - Is the baby pressed into a soft surface?
+   - Baby posture (on back / side / stomach / sitting / being held / unknown).
+
+3) Environmental hazards:
+   - Blankets, pillows, cords, small objects, toys near face,
+   - Clutter or objects that could pose choking or suffocation risk.
+
+Be cautious.
+If something is unclear, say ""uncertain"".
+Do not guess details that are not visible.",gpt-4.1-mini,low,"1) One adult male is present, centered in the frame. No baby, child, or animal visible. The adult appears to be looking toward the camera.
+
+2) No baby or young child visible in the frame, so baby safety assessment is not applicable.
+
+3) Environmental hazards are not clearly visible or identifiable in this frame; the background shows some household items but nothing that poses an immediate visible risk."
+2026-02-19T19:13:04+00:00,laptop_webcam,1,1,"You are analyzing a camera frame for child safety monitoring.
+
+Describe the scene briefly in 3–6 short lines.
+
+Focus on:
+
+1) Who are present:
+   - Identify baby, adult, animal, or other people if visible. How many? (e.g. ""1 baby in center, 1 adult on left"")
+   - Approximate age category (infant/toddler/adult) only if reasonably clear.
+   - Their position in the frame (left/right/center/background).
+   - Tell what they are doing if clear. Anything unusual or concerning?
+
+2) Baby safety assessment (if a baby or young child is visible):
+   - Is the baby’s face clearly visible?
+   - Is anything covering or very close to the mouth or nose?
+   - Is the baby pressed into a soft surface?
+   - Baby posture (on back / side / stomach / sitting / being held / unknown).
+
+3) Environmental hazards:
+   - Blankets, pillows, cords, small objects, toys near face,
+   - Clutter or objects that could pose choking or suffocation risk.
+
+Be cautious.
+If something is unclear, say ""uncertain"".
+Do not guess details that are not visible.",gpt-4.1-mini,low,"1) Scene description: One adult male, positioned on the left side of the frame, leaning forward with head down. No baby, child, or animal is visible in the frame. Background shows a door with hanging jackets and some shelves.
+
+2) Baby safety assessment: No baby visible, so not applicable.
+
+3) Environmental hazards: No obvious hazards such as cords, blankets, pillows, or small objects near a baby or child are present in the visible scene. The environment looks generally tidy."

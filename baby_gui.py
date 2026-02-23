@@ -79,6 +79,8 @@ class DescribeWorker(QObject):
     def run(self):
         try:
             text = self.describer.describe_frame(self.frame, self.prompt)
+            # TODO: only speak when high risk detected?
+            self.describer.speak(text)
             self.finished.emit(text)
         except Exception as e:
             self.error.emit(f"{type(e).__name__}: {e}")
@@ -108,6 +110,7 @@ Focus on:
    - Approximate age category (infant/toddler/adult) only if reasonably clear.
    - Their position in the frame (left/right/center/background).
    - Tell what they are doing if clear. Anything unusual or concerning?
+   - What is nanny doing? 
 
 2) Baby safety assessment (if a baby or young child is visible):
    - Is the baby’s face clearly visible?

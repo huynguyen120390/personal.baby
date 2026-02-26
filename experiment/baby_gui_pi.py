@@ -17,8 +17,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QVBoxLayout, QSpinBox, QComboBox, QMessageBox
 )
 
-from yolo_vision import YoloVision, YoloConfig
-from gpt_describer import GptDescriber, GptDescribeConfig
+from components.vision.yolo_vision import YoloVision, YoloConfig
+from components.vision.gpt_describer import GptDescriber, GptDescribeConfig
 
 
 # -------------------------

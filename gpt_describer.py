@@ -22,10 +22,10 @@ class GptDescriber:
         self.cfg = cfg
         self.client = client or OpenAI()
 
-    def _frame_to_data_url(self, frame_bgr) -> str:
+    def _frame_to_data_url(self, frame_rgb) -> str:
         ok, buf = cv2.imencode(
             ".jpg",
-            frame_bgr,
+            frame_rgb,
             [int(cv2.IMWRITE_JPEG_QUALITY), int(self.cfg.jpeg_quality)],
         )
         if not ok:

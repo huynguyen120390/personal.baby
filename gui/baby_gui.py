@@ -14,7 +14,6 @@ from configs.prompts import DEFAULT_PROMPT
 from controller.BabyMonitorController import BabyMonitorController
 
 
-@dataclass(frozen=True)
 class GuiConfig:
     source_name: str = "pi_cam"
     log_path: Path = Path("logs/monitor_log.csv")

@@ -1,3 +1,7 @@
+from pathlib import Path
+import csv
+from datetime import datetime, timezone
+
 class CsvLogger:
     def __init__(self, path: Path):
         self.path = path
@@ -19,7 +23,7 @@ class CsvLogger:
                prompt: str, gpt_model: str, detail: str, description: str):
         with self.path.open("a", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow([
-                utc_now_iso(),
+                self._utc_now_iso(),
                 source,
                 people_count,
                 int(person_present),
@@ -28,3 +32,8 @@ class CsvLogger:
                 detail,
                 description.strip().replace("\r\n", "\n"),
             ])
+
+    def _utc_now_iso(self) -> str:
+        return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+

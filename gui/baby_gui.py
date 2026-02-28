@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtCore import Qt, QTimer, QObject, Signal, Slot, QThread
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import (
@@ -9,9 +11,17 @@ from components.gui.Buttons import PushButtonWrapper
 from components.gui.Texts import LabelWrapper, TextEditWrapper
 from components.gui.BoxLayouts import QHBoxLayoutWrapper, QVBoxLayoutWrapper
 from configs.prompts import DEFAULT_PROMPT
+from controller.BabyMonitorController import BabyMonitorController
 
-class BabyMonitorGuui(QWidget):
-    def __init__(self):
+
+@dataclass(frozen=True)
+class GuiConfig:
+    source_name: str = "pi_cam"
+    log_path: Path = Path("logs/monitor_log.csv")
+
+
+class BabyMonitorGui(QWidget):
+    def __init__(self, cfg: GuiConfig):
         super().__init__()
         self.setWindowTitle("Baby Monitor")
         self.setGeometry(100, 100, 400, 300)
@@ -39,12 +49,30 @@ class BabyMonitorGuui(QWidget):
                                            controls_layout])
         root_layout = QHBoxLayoutWrapper([self.video_label, right_layout])
 
+
+        # Controller
+        self.controller = BabyMonitorController()
+
+
+        self.frame_timer = QTimer()
+        self.frame_timer.timeout.connect(self.controller.update_frame)
+
+        #self.describer_timer = QTimer()
+       # self.describer_timer.timeout.connect(self.controller.describe_now)
+
+
     def start_monitor(self):
         print("Start monitoring...")
         try:
             self.start_button.set_enabled(False)
             self.stop_button.set_enabled(True)
             self.describe_now_button.set_enabled(True)
+            self.controller.start()
+
+            self.frame_timer.start(30)  # Update frame every 30 ms (~33 FPS)
+            #self.describer_timer.start(5000)  # Describe every 5 seconds
+
+
         except Exception as e:
             QMessageBox.critical(self, "An Error Occurred",
                                  "{} {}".format(type(e).__name__, str(e)))
@@ -54,6 +82,23 @@ class BabyMonitorGuui(QWidget):
             self.stop_button.set_enabled(False)
             self.describe_now_button.set_enabled(False)
 
+
+    def stop_monitor(self):
+        print("Stop monitoring...")
+        self.frame_timer.stop()
+        #self.describer_timer.stop()
+        self.controller.stop()
+
+
+if __name__ == "__main__":
+    cfg = GuiConfig(
+        source_name="pi_cam",
+        log_path=Path("logs/monitor_log.csv")
+    )
+
+    m = BabyMonitorGui(cfg)
+    m.resize(800, 600)
+    m.show()
 
 
 

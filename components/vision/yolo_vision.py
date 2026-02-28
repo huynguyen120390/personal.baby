@@ -10,7 +10,7 @@ from ultralytics import YOLO
 
 @dataclass(frozen=True)
 class YoloConfig:
-    model_path: str = "../../yolov8n.pt"
+    model_path: str = "yolov8n.pt"
     conf: float = 0.35
     person_min_conf: float = 0.45
 

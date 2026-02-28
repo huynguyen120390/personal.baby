@@ -1,10 +1,18 @@
 
 
 from components.camera.pi_cam import Camera
+from components.vision.gpt_describer import GptDescriber, GptDescribeConfig
+from components.vision.yolo_vision import YoloVision, YoloConfig
 
 class BabyMonitorController:
     def __init__(self):
         self.camera = Camera()
+        self.describer = GptDescriber(GptDescribeConfig(detail="low"))
+        self.vision = YoloVision(YoloConfig(
+            model_path="yolov8n.pt",
+            conf=0.35,
+            person_min_conf=0.7,
+        ))
 
     def start(self):
 
@@ -17,5 +25,18 @@ class BabyMonitorController:
         for _ in range(5):
             self.camera.capture_frame()
 
+
+    def update_frame(self):
+        frame = self.camera.capture_frame()
+        if frame is None:
+            print("Warning: Failed to capture frame.")
+            return
+
+        result = self.vision.predict(frame)
+        annotated = self.vision.annotated_frame(result)
+
+
+
+
     def stop(self):
-        pass
+        self.camera.stop()

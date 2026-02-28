@@ -1,0 +1,19 @@
+[project]
+name = "personal_baby"
+version = "0.1.0"
+description = "AI-powered baby monitoring system"
+authors = [{ name = "Huy Nguyen" }]
+requires-python = ">=3.11"
+
+dependencies = [
+  "PySide6",
+  "opencv-contrib-python",
+  "ultralytics",
+  "openai",
+  "pyttsx3",
+  "sounddevice",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

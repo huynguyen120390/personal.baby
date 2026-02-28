@@ -7,7 +7,7 @@ from pathlib import Path
 import cv2
 from PySide6.QtWidgets import QApplication
 
-from gui.baby_gui import GuiConfig
+from src.babysitter.gui import GuiConfig
 
 
 def _ensure_project_root_on_syspath() -> Path:
@@ -33,7 +33,7 @@ def main() -> int:
     _ensure_dirs(project_root)
 
     # Now safe to import your app code (after sys.path is fixed)
-    from gui.baby_gui import BabyMonitorGui  # adjust if your file/class lives elsewhere
+    from src.babysitter.gui import BabyMonitorGui  # adjust if your file/class lives elsewhere
 
 
     app = QApplication(sys.argv)

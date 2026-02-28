@@ -1,8 +1,8 @@
 
 
-from components.camera.pi_cam import Camera
-from components.vision import GptDescriber, GptDescribeConfig
-from components.vision import YoloVision, YoloConfig
+from src.babysitter.components.camera.pi_cam import Camera
+from src.babysitter.components import GptDescriber, GptDescribeConfig
+from src.babysitter.components import YoloVision, YoloConfig
 
 class BabyMonitorController:
     def __init__(self):

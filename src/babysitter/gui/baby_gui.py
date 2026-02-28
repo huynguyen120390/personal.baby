@@ -1,17 +1,15 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QObject, Signal, Slot, QThread
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QLabel, QTextEdit, QPushButton,
-    QHBoxLayout, QVBoxLayout, QSpinBox, QComboBox, QMessageBox
+    QWidget, QMessageBox
 )
 
-from components.gui.Buttons import PushButtonWrapper
-from components.gui.Texts import LabelWrapper, TextEditWrapper
-from components.gui.BoxLayouts import QHBoxLayoutWrapper, QVBoxLayoutWrapper
-from configs.prompts import DEFAULT_PROMPT
-from controller.BabyMonitorController import BabyMonitorController
+from src.babysitter.components.gui.Buttons import PushButtonWrapper
+from src.babysitter.components.gui.Texts import LabelWrapper, TextEditWrapper
+from src.babysitter.components.gui.BoxLayouts import QHBoxLayoutWrapper, QVBoxLayoutWrapper
+from src.babysitter.configs.prompts import DEFAULT_PROMPT
+from src.babysitter.controller.BabyMonitorController import BabyMonitorController
 
 
 class GuiConfig:

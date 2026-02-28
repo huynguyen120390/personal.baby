@@ -344,17 +344,4 @@ class BabyMonitorQt(QWidget):
         self._describe_in_flight = False
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
 
-    cfg = GuiConfig(
-        source_name="laptop_webcam",
-        log_path=Path("logs/monitor_log.csv"),
-        camera_backend=cv2.CAP_DSHOW,  # if slow, try cv2.CAP_MSMF
-    )
-
-    w = BabyMonitorQt(cfg)
-    w.resize(1500, 850)
-    w.show()
-
-    sys.exit(app.exec())

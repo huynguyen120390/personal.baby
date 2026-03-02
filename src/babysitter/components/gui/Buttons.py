@@ -46,9 +46,11 @@ class PushButtonWrapper(object):
         }}
         """
         self._button.setStyleSheet(stylesheet)
+        return self
 
     def set_enabled(self, enabled:bool):
         self._button.setEnabled(enabled)
+        return self
 
     def get_widget(self):
         return self._button

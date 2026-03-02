@@ -24,6 +24,7 @@ class LabelWrapper:
         }}
         """
         self._label.setStyleSheet(stylesheet)
+        return self
 
     def get_widget(self):
         return self._label
@@ -43,9 +44,11 @@ class TextEditWrapper:
         }}
         """
         self._text_edit.setStyleSheet(stylesheet)
-
+        return self
+    
     def set_readonly(self, readonly:bool):
         self._text_edit.setReadOnly(readonly)
+        return self
 
     def get_widget(self):
         return self._text_edit

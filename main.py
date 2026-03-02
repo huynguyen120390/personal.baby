@@ -4,19 +4,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import cv2
 from PySide6.QtWidgets import QApplication
-
-from src.babysitter.gui import GuiConfig
 
 
 def _ensure_project_root_on_syspath() -> Path:
-    """
-    Make imports like `from components...` work no matter where the script is launched from
-    (VSCode, double-click, terminal in a subfolder, etc.).
-
-    Returns the project root (folder containing this main.py).
-    """
     project_root = Path(__file__).resolve().parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
@@ -24,7 +15,6 @@ def _ensure_project_root_on_syspath() -> Path:
 
 
 def _ensure_dirs(project_root: Path) -> None:
-    # Ensure runtime folders exist
     (project_root / "logs").mkdir(parents=True, exist_ok=True)
 
 
@@ -32,21 +22,30 @@ def main() -> int:
     project_root = _ensure_project_root_on_syspath()
     _ensure_dirs(project_root)
 
-    # Now safe to import your app code (after sys.path is fixed)
-    from src.babysitter.gui import BabyMonitorGui  # adjust if your file/class lives elsewhere
+    # ✅ Import AFTER sys.path is fixed
+    from src.babysitter.gui.baby_gui import BabyMonitorGui, GuiConfig
 
+    #When the program receives Ctrl+C, use the default OS behavior to terminate the program immediately, 
+    # instead of raising a KeyboardInterrupt exception that can be caught by the program. 
+    # This allows for a more graceful shutdown when the user wants to exit the application using Ctrl+C.
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     app = QApplication(sys.argv)
 
     cfg = GuiConfig(
         source_name="pi_cam",
         log_path=project_root / "logs" / "monitor_log.csv",
-        camera_backend=cv2.CAP_DSHOW,  # Windows: try CAP_MSMF if CAP_DSHOW is slow/buggy
     )
 
+    print("✅ before creating window")
     w = BabyMonitorGui(cfg)
     w.resize(1500, 850)
+    print("✅ after creating window")
     w.show()
+    print("✅ after show()")
+   # w.raise_()
+    w.activateWindow()
 
     return app.exec()
 

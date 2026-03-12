@@ -4,7 +4,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from PIL.ImageChops import screen
 from PySide6.QtWidgets import QApplication
+from matplotlib.pylab import size
+from PySide6.QtCore import Qt, QTimer
 
 
 def _ensure_project_root_on_syspath() -> Path:
@@ -33,6 +36,17 @@ def main() -> int:
 
     app = QApplication(sys.argv)
 
+    screen = app.primaryScreen()
+    size = screen.availableGeometry()
+    avail = screen.availableGeometry()
+
+    geo = screen.geometry()
+    print("SCREEN geometry:", geo.width(), geo.height())
+    print("SCREEN available:", avail.width(), avail.height())
+
+    width = size.width()
+    height = size.height()
+
     cfg = GuiConfig(
         source_name="pi_cam",
         log_path=project_root / "logs" / "monitor_log.csv",
@@ -40,7 +54,14 @@ def main() -> int:
 
     print("✅ before creating window")
     w = BabyMonitorGui(cfg)
-    w.resize(1500, 850)
+    w.resize(width, height)
+    #w.showFullScreen()
+    # Let the window exist first, then maximize
+    QTimer.singleShot(0, lambda: w.setWindowState(w.windowState() | Qt.WindowMaximized))
+    QTimer.singleShot(0, w.showFullScreen)
+    
+
+    
     print("✅ after creating window")
     w.show()
     print("✅ after show()")

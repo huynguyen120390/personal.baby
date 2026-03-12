@@ -24,6 +24,7 @@ class YoloVision:
         """Returns the first ultralytics result object for this frame."""
         results = self.model.predict(source=frame_bgr, conf=self.cfg.conf, verbose=False)
         return results[0]
+    
 
     @staticmethod
     def annotated_frame(result):

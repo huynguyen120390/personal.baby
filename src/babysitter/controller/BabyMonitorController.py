@@ -1,31 +1,24 @@
 from __future__ import annotations
 from dataclasses import dataclass
+import threading
 from typing import Optional, Any
 import time
 import numpy as np
 
+from src.babysitter.components.brain.vision_analyzer import VisionAnalyzer, VisionResult
 from src.babysitter.components.camera.pi_cam import Camera
 from src.babysitter.components.brain.gpt_describer import GptDescriber, GptDescribeConfig
 from src.babysitter.components.brain.yolo_vision import YoloVision, YoloConfig
-
-
-@dataclass
-class FramePacket:
-    frame_rgb: np.ndarray                 # (H,W,3) RGB888
-    yolo_result: Optional[Any] = None     # whatever your YOLO returns
-    annotated_rgb: Optional[np.ndarray] = None
-    timestamp: float = 0.0
+from src.babysitter.dataclasses.vision_packages import FramePacket
+from src.babysitter.skills.contracts import AsyncSkill, ConditionalSkill, ConditionalSkill, SequenceSkill, SequenceSkill
+from src.babysitter.skills.vision_skills import GptDescriberSkill, GptIntervalGateSkill, YoloSkill
 
 
 class BabyMonitorController:
     def __init__(self):
         self.camera =None
-        self.describer = GptDescriber(GptDescribeConfig(detail="low"))
-        self.vision = YoloVision(YoloConfig(
-            model_path="yolov8n.pt",
-            conf=0.35,
-            person_min_conf=0.7,
-        ))
+        self.vision_analyzer = VisionAnalyzer()
+       
 
         self._running = False
         self._last_gpt_ts = 0.0
@@ -36,6 +29,9 @@ class BabyMonitorController:
             self.camera = Camera()
         self.camera.start()
         if not self.camera.is_opened():
+            self.camera.stop()
+            self.camera.close()
+            self.camera = None
             raise RuntimeError("Failed to start the camera.")
 
         # Warm up camera
@@ -55,7 +51,7 @@ class BabyMonitorController:
     def is_running(self) -> bool:
         return self._running
 
-    def observe_frame(self) -> Optional[FramePacket]:
+    def observe_frame(self, prompt=None) -> Optional[FramePacket]:
         """
         Pull one frame and run lightweight vision work. Returns a packet for GUI to display.
         Heavy work (GPT) should be throttled or moved to a background thread later.
@@ -67,24 +63,16 @@ class BabyMonitorController:
         if frame is None:
             return None
 
-        # YOLO step (keep it relatively lightweight)
-        result = self.vision.predict(frame)
-
-        # If annotated_frame returns a numpy RGB image, great.
-        # If it draws in-place, adjust accordingly.
-        annotated = self.vision.annotated_frame(result)
+        result = self.vision_analyzer.analyze(frames=frame, prompt=prompt)
+        
+        timestamp = time.time()
 
         pkt = FramePacket(
+            vision_result=result,
             frame_rgb=frame,
-            yolo_result=result,
-            annotated_rgb=annotated,
-            timestamp=time.time(),
+            timestamp=timestamp
         )
-
-        # Optional: throttle GPT (NOT per-frame)
-        # You can also trigger only when person/baby detected.
-        # if time.time() - self._last_gpt_ts > self._gpt_interval_s:
-        #     self._last_gpt_ts = time.time()
-        #     ... queue GPT job in a background thread ...
-
         return pkt
+    
+    
+    

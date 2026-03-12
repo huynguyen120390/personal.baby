@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+import time
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
@@ -12,6 +13,7 @@ from src.babysitter.components.gui.BoxLayouts import QHBoxLayoutWrapper, QVBoxLa
 from src.babysitter.components.gui.VideoViews import VideoViewWrapper
 from src.babysitter.configs.prompts import DEFAULT_PROMPT
 from src.babysitter.controller.BabyMonitorController import BabyMonitorController
+from src.babysitter.dataclasses.vision_packages import FramePacket
 
 @dataclass
 class GuiConfig:
@@ -23,7 +25,7 @@ class BabyMonitorGui(QWidget):
     def __init__(self, cfg: GuiConfig, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Baby Monitor")
-        self.setGeometry(100, 100, 400, 300)
+        #self.setGeometry(100, 100, 400, 300)
 
         # Labels
         self.video_label = LabelWrapper("Camera Feed").set_style(color="blue", font_size=18)
@@ -33,9 +35,10 @@ class BabyMonitorGui(QWidget):
                              .set_style(color="black", font_size=14)
                              .set_readonly(True))
         self.prompt_box_label = LabelWrapper("Current Prompt").set_style(color="blue", font_size=18)
-        self.prompt_box= (TextEditWrapper(DEFAULT_PROMPT)
+        self.prompt_box= (TextEditWrapper("Prompt for AI...")
                           .set_style(color="black", font_size=14)
-                          .set_readonly(True))
+                          .set_readonly(False))
+        self.prompt_box.get_widget().setText(DEFAULT_PROMPT)
 
         # Buttons
         self.start_button = PushButtonWrapper("Start Monitoring", self, self.start_monitor).set_enabled(True)
@@ -59,9 +62,11 @@ class BabyMonitorGui(QWidget):
 
         self.frame_timer = QTimer()
         self.frame_timer.timeout.connect(self.on_update_frame)
+        self.key_descriptions = {}
 
         #self.describer_timer = QTimer()
        # self.describer_timer.timeout.connect(self.controller.describe_now)
+        self._last_description = ""
 
 
     def start_monitor(self):
@@ -88,20 +93,50 @@ class BabyMonitorGui(QWidget):
         #self.describer_timer.stop()
         self.controller.stop()
 
+    def _compose_text(self, pkt:  FramePacket):
+        text = self._last_description 
+        if pkt.vision_result is not None and pkt.vision_result.human_count:
+            human_count = pkt.vision_result.human_count
+            #yolo_result = pkt.vision_result.yolo_result if pkt.vision_result.yolo_result is not None else "No YOLO result"
+            gpt_description =  pkt.vision_result.gpt_result
+
+            timestamp_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(pkt.timestamp))
+            text =  f"Timestamp: {timestamp_str}: {human_count} people.\n ------------------------------------------\n" 
+            if gpt_description:
+                self.key_descriptions[pkt.timestamp] = gpt_description
+            # Keep only descriptions from the last 5 minutes
+            cutoff = time.time() - 5*60
+            self.key_descriptions = {ts: desc for ts, desc in self.key_descriptions.items() if ts >= cutoff}
+            # Append descriptions to text, sorted by timestamp
+            for ts in sorted(self.key_descriptions.keys(),reverse=True):
+                desc = self.key_descriptions[ts]
+                text += f"\n{time.strftime('%H:%M:%S', time.localtime(ts))}: {desc}\n"
+            self._last_description = text
+            #TODO: have a skill to condense the description, and format it in json to display and save in df
+
+        return text
+
     def on_update_frame(self):
-        pkt = self.controller.observe_frame()
+        prompt = self.prompt_box.get_widget().toPlainText()
+    
+        pkt = self.controller.observe_frame(prompt=prompt)
         if pkt is None:
             return
 
-        # Text: show something meaningful (yolo_result object can be huge; use a short summary)
-        self.describe_box.get_widget().setText(str(pkt.yolo_result))
+        text = self._compose_text(pkt)
+        self.describe_box.get_widget().setText(text)
 
         # Video: choose annotated if available, otherwise raw frame
-        frame_to_show = pkt.annotated_rgb if pkt.annotated_rgb is not None else pkt.frame_rgb
-        if frame_to_show is None:
-            return
+        if pkt.vision_result and pkt.vision_result.yolo_result:
+            if pkt.vision_result.yolo_annotated_rgb is not None :
+                frame_to_show = pkt.vision_result.yolo_annotated_rgb
+            else:
+                frame_to_show = pkt.frame_rgb
 
-        self.video_view.set_frame_rgb(frame_to_show)
+            if frame_to_show is None:
+                return
+
+            self.video_view.set_frame_rgb(frame_to_show)
         
     def closeEvent(self, event):
         try:
